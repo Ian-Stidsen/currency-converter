@@ -41,6 +41,7 @@ function Converter() {
     async function responseHandler () {
       const response = await getConversion();
       inputTo.value = response;
+      console.log()
     }
 
     responseHandler()
@@ -55,6 +56,8 @@ function Converter() {
             <option value="DKK">DKK</option>
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
+            <option value="GBP">GPB</option>
+
           </select>
         </div>
         <input className="form-control" onChange={convert} type="number" id="convertFrom" placeholder="Amount"></input>
