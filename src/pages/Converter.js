@@ -1,10 +1,7 @@
 import React from 'react';
 import '../stylesheets/converter.css';
 
-// gqjPO77bb3QuF5fCZ4LRMAdHH9Adt2M7
-// https://api.apilayer.com/currency_data/convert?to={DDK}&from={USD}&amount={1}
-
-// https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,USD,DDK
+import API_KEYS from '../data/API.json';
 
 
 function Converter() {
@@ -24,7 +21,7 @@ function Converter() {
     const CURRENCY_API =`https://api.apilayer.com/currency_data/convert?to=${currencyTo.value}&from=${currencyFrom.value}&amount=${inputFrom.value}`;
 
     let myHeaders = new Headers();
-    myHeaders.append("apikey", "gqjPO77bb3QuF5fCZ4LRMAdHH9Adt2M7");
+    myHeaders.append("apikey", API_KEYS.Converter_APIKEY);
 
     const requestOptions = {
     method: 'GET',
@@ -48,34 +45,35 @@ function Converter() {
   }
   return (
     <div className="container">
-    <form>
-      <label htmlFor="convertFrom">Convert from</label>
-      <div className="input-group">
-        <div className="input-group-text">
-          <select className="form-select" onChange={convert} name="currency" id="currencyFrom">
-            <option value="DKK">DKK</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GPB</option>
+      <h1 className='converter-title'>Currency Converter</h1>
+      <form>
+        <label htmlFor="convertFrom">Convert from</label>
+        <div className="input-group">
+          <div className="input-group-text">
+            <select className="form-select" onChange={convert} name="currency" id="currencyFrom">
+              <option value="DKK">DKK</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GPB</option>
 
-          </select>
+            </select>
+          </div>
+          <input className="form-control" onChange={convert} type="number" id="convertFrom" placeholder="Amount"></input>
         </div>
-        <input className="form-control" onChange={convert} type="number" id="convertFrom" placeholder="Amount"></input>
-      </div>
 
-      <label htmlFor="convertTo">Convert to</label>
-      <div className="input-group">
-        <div className="input-group-text">
-          <select className="form-select" onChange={convert} name="currency" id="currencyTo">
-            <option value="DKK">DKK</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-          </select>
+        <label htmlFor="convertTo">Convert to</label>
+        <div className="input-group">
+          <div className="input-group-text">
+            <select className="form-select" onChange={convert} name="currency" id="currencyTo">
+              <option value="DKK">DKK</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+          <input disabled className="form-control" type="number" id="convertTo" placeholder="Amount"></input>
         </div>
-        <input className="form-control" type="number" id="convertTo" placeholder="Amount"></input>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
   );
 }
 
