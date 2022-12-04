@@ -15,7 +15,7 @@ function Converter() {
   // Runs the API once when the page is loaded.
   useEffect(() => {
     getConversionRates();
-  })
+  }, [])
 
   function getConversionRates () {
     const CURRENCY_API = 'https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP';
@@ -38,7 +38,6 @@ function Converter() {
     async function responseHandler () {
       const response = await getConversion();
       conversionRates = response;
-      console.log(conversionRates);
     }
 
     responseHandler()
