@@ -14,7 +14,7 @@ root.render(
     <Routes>
       <Route path="/" element={<Converter />} />
       <Route path="/inflation" element={<Inflation />} />
-      <Route path="/rates" element={<Rates />} />
+      {<Route path="/rates" element={<Rates />} />}
     </Routes>
   </BrowserRouter>
 );

@@ -29,17 +29,12 @@ function Converter() {
     headers: myHeaders
     };
 
-    function getConversion () {
-      return fetch(CURRENCY_API, requestOptions)
-        .then(response => response.json())
-        .then(data => data.quotes);
-    }
-
-    async function responseHandler () {
-      const response = await getConversion();
-      conversionRates = response;
-    }
-    responseHandler();
+    fetch(CURRENCY_API, requestOptions)
+      .then(response => response.json())
+      .then(data => data.quotes)
+      .then(result => {
+        conversionRates = result;
+      })
   };
 
   function convert() {
