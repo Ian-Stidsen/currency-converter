@@ -9,12 +9,20 @@ import API_KEYS from '../data/API.json';
 
 
 function Converter() {
+  let inputFrom;
+  let inputTo;
+  let currencyFrom;
+  let currencyTo;
 
-  let conversionRates;
+  let conversionRates = {};
 
   // Runs the API once when the page is loaded.
   useEffect(() => {
     getConversionRates();
+    inputFrom = document.getElementById('convertFrom');
+    inputTo = document.getElementById('convertTo');
+    currencyFrom = document.getElementById('currencyFrom');
+    currencyTo = document.getElementById('currencyTo');
   }, [])
 
   function getConversionRates () {
@@ -33,15 +41,17 @@ function Converter() {
       .then(response => response.json())
       .then(data => data.quotes)
       .then(result => {
-        conversionRates = result;
+        Object.entries(result).map(entry => {
+          const currency = entry[0][3] + entry[0][4] + entry[0][5]
+          conversionRates[currency] = entry[1];
+
+          currencyFrom.innerHTML += `<option value="${currency}">${currency}</option>`
+          currencyTo.innerHTML += `<option value="${currency}">${currency}</option>`
+        });
       })
   };
 
   function convert() {
-    const inputFrom = document.getElementById('convertFrom');
-    const inputTo = document.getElementById('convertTo');
-    const currencyFrom = document.getElementById('currencyFrom');
-    const currencyTo = document.getElementById('currencyTo');
 
     // If you convert from the same currency it just returns the same value.
     if (currencyFrom.value === currencyTo.value) {
@@ -55,10 +65,10 @@ function Converter() {
 
       // Since the base currency from the API is USD i just set the value to 1:
       if (currencyFrom.value === 'USD') from = 1;
-      else from = conversionRates['USD' + currencyFrom.value];
+      else from = conversionRates[currencyFrom.value];
 
       if (currencyTo.value === 'USD') to = 1;
-      else to = conversionRates['USD' + currencyTo.value];
+      else to = conversionRates[currencyTo.value];
 
       // Calculates to convertion rate by dividing the currency values compared to USD.
       return to / from;
@@ -75,10 +85,7 @@ function Converter() {
         <div className="input-group">
           <div className="input-group-text">
             <select className="form-select" onChange={convert} name="currency" id="currencyFrom">
-              <option value="DKK">DKK</option>
               <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GPB</option>
             </select>
           </div>
           <div className='form-floating'>
@@ -88,9 +95,7 @@ function Converter() {
 
           <div className="input-group-text">
             <select className="form-select" onChange={convert} name="currency" id="currencyTo">
-              <option value="DKK">DKK</option>
               <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
             </select>
           </div>
           <div className='form-floating'>
