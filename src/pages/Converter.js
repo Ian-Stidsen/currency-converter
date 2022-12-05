@@ -39,8 +39,7 @@ function Converter() {
       const response = await getConversion();
       conversionRates = response;
     }
-
-    responseHandler()
+    responseHandler();
   };
 
   function convert() {
