@@ -4,7 +4,7 @@
   padding: 0;
 }
 
-:root {
+/* :root {
   --theme-color: #1434A4;
   --navbar-text-color: rgb(170, 170, 170);
   --navbar-hover-text-color: white;
@@ -39,7 +39,7 @@
   border: none;
   color: var(--navbar-text-color);
   background: none;
-}
+} */
 
 #FaBars:hover,
 #FaTimes:hover,
@@ -48,7 +48,7 @@
   cursor: pointer;
 }
 
-#FaBars {
+/* #FaBars {
   transition: 300ms;
   transition-delay: 300ms;
 }
@@ -76,7 +76,7 @@
   justify-content: space-between;
   position: fixed;
   width: 100vw;
-  height: 220px;
+  height: 100px;
   top: 150px;
   transform: translateX(400px);
   list-style: none;
@@ -97,4 +97,4 @@
   text-decoration: none;
   color: var(--navbar-text-color);
   font-size: 2.3rem;
-}
+} */

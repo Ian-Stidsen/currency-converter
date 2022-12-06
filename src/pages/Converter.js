@@ -12,16 +12,21 @@ import API_KEYS from '../data/API.json';
 
 function Converter() {
 
+  function log(log) {console.log(log)};
+
   // Runs the API once when the page is loaded.
   useEffect(() => {
     getConversionRates();
   }, [])
 
   const [rates, setRates] = useState({USD: 1})
-  const [currencyCodes, setCurrencyCodes] = useState([<option key='USD' value='USD'>USD</option>]);
+  const [currencyCodes, setCurrencyCodes] = useState([<option value='USD'>USD</option>]);
 
-  const [convertFromValue, setConvertFromValue] = useState(0);
-  const [convertToValue, setConvertToValue] = useState(0);
+  const [currencyFromValue, setCurrencyFromValue] = useState('USD');
+  const [currencyToValue, setCurrencyToValue] = useState('USD');
+
+  const [inputFromValue, setInputFromValue] = useState(0);
+  const [inputToValue, setInputToValue] = useState(0);
 
   function getConversionRates () {
     const CURRENCY_API = 'https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP';
@@ -47,41 +52,42 @@ function Converter() {
           }))
           setCurrencyCodes((prevState) => ([
             ...prevState,
-            <option key={currency} value={currency}>{currency}</option>
+            <option value={currency}>{currency}</option>
           ]))
         });
       });
   };
 
-  const convert = () => {
+  const convert = (e) => {
+    const value = e.target.value
+    const id = e.target.id
 
-    const inputFrom = document.getElementById('convertFrom');
-    const inputTo = document.getElementById('convertTo');
-    const currencyFrom = document.getElementById('currencyFrom');
-    const currencyTo = document.getElementById('currencyTo');
+    switch(id) {
+      case 'currencyFrom':
+        setCurrencyFromValue(value);
+        calculate(value, currencyToValue, inputFromValue);
+        break;
 
-    // If you convert from the same currency it just returns the same value.
-    if (currencyFrom.value === currencyTo.value) {
-      inputTo.value = inputFrom.value;
-      return;
-    };
-    
-    const rate = () => {
-      let from;
-      let to;
+      case 'currencyTo':
+        setCurrencyToValue(value);
+        calculate(currencyFromValue, value, inputFromValue);
+        break;
 
-      // Since the base currency from the API is USD i just set the value to 1:
-      if (currencyFrom.value === 'USD') from = 1;
-      else from = rates[currencyFrom.value];
+      case 'inputFrom':
+        setInputFromValue(value);
+        calculate(currencyFromValue, currencyToValue, value);
+        break;
 
-      if (currencyTo.value === 'USD') to = 1;
-      else to = rates[currencyTo.value];
-
-      // Calculates to convertion rate by dividing the currency values compared to USD.
-      return to / from;
-    }  
-    
-    inputTo.value = rate() * inputFrom.value;
+      default:
+        calculate(currencyFromValue, currencyToValue, inputFromValue);
+        break;
+    }
+  };
+  
+  const calculate = (currencyFrom, currencyTo, inputFrom) => {
+    const rate = rates[currencyTo] / rates[currencyFrom];
+    const result = inputFrom * rate
+    setInputToValue(result)
   };
 
   return (
@@ -96,8 +102,8 @@ function Converter() {
             </select>
           </div>
           <div className='form-floating'>
-            <input className="form-control" onChange={convert} type="number" id="convertFrom" placeholder="Amount"></input>
-            <label htmlFor="convertFrom" className='form-label'>Convert from</label>
+            <input className="form-control" onChange={convert} type="number" id="inputFrom" placeholder="" value={inputFromValue}></input>
+            <label htmlFor="convertFrom" className='form-label'>Convert from {currencyFromValue}</label>
           </div>
 
           <div className="input-group-text">
@@ -106,8 +112,8 @@ function Converter() {
             </select>
           </div>
           <div className='form-floating'>
-            <input className="form-control" type="number" id="convertTo" placeholder=""></input>
-            <label htmlFor="convertTo" className='form-label'>Convert to</label>
+            <input value={inputToValue} readOnly className="form-control" type="number" id="inputTo" placeholder=""></input>
+            <label htmlFor="convertTo" className='form-label'>Convert to {currencyToValue}</label>
           </div>
         </div>
 
