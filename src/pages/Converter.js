@@ -1,5 +1,7 @@
 import React, {
   useEffect,
+  useState,
+  useMemo
 } from 'react';
 import '../stylesheets/converter.css';
 
@@ -9,21 +11,17 @@ import API_KEYS from '../data/API.json';
 
 
 function Converter() {
-  let inputFrom;
-  let inputTo;
-  let currencyFrom;
-  let currencyTo;
-
-  let conversionRates = {};
 
   // Runs the API once when the page is loaded.
   useEffect(() => {
     getConversionRates();
-    inputFrom = document.getElementById('convertFrom');
-    inputTo = document.getElementById('convertTo');
-    currencyFrom = document.getElementById('currencyFrom');
-    currencyTo = document.getElementById('currencyTo');
   }, [])
+
+  const [rates, setRates] = useState({USD: 1})
+  const [currencyCodes, setCurrencyCodes] = useState([<option key='USD' value='USD'>USD</option>]);
+
+  const [convertFromValue, setConvertFromValue] = useState(0);
+  const [convertToValue, setConvertToValue] = useState(0);
 
   function getConversionRates () {
     const CURRENCY_API = 'https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP';
@@ -43,15 +41,24 @@ function Converter() {
       .then(result => {
         Object.entries(result).map(entry => {
           const currency = entry[0][3] + entry[0][4] + entry[0][5]
-          conversionRates[currency] = entry[1];
-
-          currencyFrom.innerHTML += `<option value="${currency}">${currency}</option>`
-          currencyTo.innerHTML += `<option value="${currency}">${currency}</option>`
+          setRates((prevState) => ({
+            ...prevState,
+            [currency]: entry[1]
+          }))
+          setCurrencyCodes((prevState) => ([
+            ...prevState,
+            <option key={currency} value={currency}>{currency}</option>
+          ]))
         });
-      })
+      });
   };
 
-  function convert() {
+  const convert = () => {
+
+    const inputFrom = document.getElementById('convertFrom');
+    const inputTo = document.getElementById('convertTo');
+    const currencyFrom = document.getElementById('currencyFrom');
+    const currencyTo = document.getElementById('currencyTo');
 
     // If you convert from the same currency it just returns the same value.
     if (currencyFrom.value === currencyTo.value) {
@@ -65,16 +72,16 @@ function Converter() {
 
       // Since the base currency from the API is USD i just set the value to 1:
       if (currencyFrom.value === 'USD') from = 1;
-      else from = conversionRates[currencyFrom.value];
+      else from = rates[currencyFrom.value];
 
       if (currencyTo.value === 'USD') to = 1;
-      else to = conversionRates[currencyTo.value];
+      else to = rates[currencyTo.value];
 
       // Calculates to convertion rate by dividing the currency values compared to USD.
       return to / from;
     }  
     
-    inputTo.value = rate() * inputFrom.value; 
+    inputTo.value = rate() * inputFrom.value;
   };
 
   return (
@@ -85,7 +92,7 @@ function Converter() {
         <div className="input-group">
           <div className="input-group-text">
             <select className="form-select" onChange={convert} name="currency" id="currencyFrom">
-              <option value="USD">USD</option>
+              {currencyCodes}
             </select>
           </div>
           <div className='form-floating'>
@@ -95,11 +102,11 @@ function Converter() {
 
           <div className="input-group-text">
             <select className="form-select" onChange={convert} name="currency" id="currencyTo">
-              <option value="USD">USD</option>
+              {currencyCodes}
             </select>
           </div>
           <div className='form-floating'>
-            <input disabled className="form-control" type="number" id="convertTo" placeholder=""></input>
+            <input className="form-control" type="number" id="convertTo" placeholder=""></input>
             <label htmlFor="convertTo" className='form-label'>Convert to</label>
           </div>
         </div>
