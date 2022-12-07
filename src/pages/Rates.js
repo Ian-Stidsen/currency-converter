@@ -56,7 +56,7 @@ function Rates() {
         tableLayout: '50%',
         width: '75vw',
       }}>
-        <TableHeaderColumn thStyle={{width: '32.5%'}} dataField='currency' isKey={true}>Currency codes</TableHeaderColumn>
+        <TableHeaderColumn thStyle={{width: '32.9%'}} dataField='currency' isKey={true}>Currency codes</TableHeaderColumn>
         <TableHeaderColumn dataField='value'>Value compared to USD</TableHeaderColumn>
       </BootstrapTable>
     </>

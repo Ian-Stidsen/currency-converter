@@ -90,8 +90,16 @@ function Converter() {
     setInputToValue(result)
   };
 
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '50vh'
+  }
+
   return (
-    <div className="container">
+    <div className="container" style={containerStyle}>
       <h1 className='converter-title'>Currency Converter</h1>
       <form>
 
