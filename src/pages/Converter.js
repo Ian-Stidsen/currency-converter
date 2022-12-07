@@ -45,22 +45,25 @@ function Converter() {
       .then(data => data.quotes)
       .then(result => {
         Object.entries(result).map(entry => {
-          const currency = entry[0][3] + entry[0][4] + entry[0][5]
+          const currency = entry[0][3] + entry[0][4] + entry[0][5];
+          
           setRates((prevState) => ({
             ...prevState,
             [currency]: entry[1]
-          }))
+          }));
+
           setCurrencyCodes((prevState) => ([
             ...prevState,
             <option value={currency}>{currency}</option>
-          ]))
+          ]));
+
         });
       });
   };
 
   const convert = (e) => {
-    const value = e.target.value
-    const id = e.target.id
+    const id = e.target.id;
+    const value = e.target.value;
 
     switch(id) {
       case 'currencyFrom':
@@ -86,8 +89,8 @@ function Converter() {
   
   const calculate = (currencyFrom, currencyTo, inputFrom) => {
     const rate = rates[currencyTo] / rates[currencyFrom];
-    const result = inputFrom * rate
-    setInputToValue(result)
+    const result = inputFrom * rate;
+    setInputToValue(result);
   };
 
   const containerStyle = {

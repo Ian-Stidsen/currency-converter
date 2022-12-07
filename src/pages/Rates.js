@@ -17,7 +17,7 @@ function Rates() {
     }
   ];
 
-  const [rates, setRates] = useState(ratesData);
+  const [rates, setRates] = useState([{currency: 'USD', value: 1}]);
 
   // Runs the API once when the page is loaded.
   useEffect(() => {
@@ -41,23 +41,32 @@ function Rates() {
       .then(response => response.json())
       .then(data => data.quotes)
       .then(result => {
-        conversionRates = Object.entries(result).map(entry => {
+        Object.entries(result).map(entry => {
           const currency = entry[0][3] + entry[0][4] + entry[0][5];
           const value = 1 / entry[1]
-          return {currency: '1 ' + currency, value: value.toFixed(4) + ' USD'};
-        })
-        setRates(conversionRates);
+
+          setRates((prevState) => (
+            [
+              ...prevState,
+              {
+              currency: '1 ' + currency,
+              value: value.toFixed(4) + ' USD'
+              }
+            ]
+          ));
+
+        });
       });
   };
 
   return (
     <>
       <BootstrapTable data={rates} tableStyle={{
-        tableLayout: '50%',
-        width: '75vw',
+        tableLayout: 'auto',
+        width: '500px',
       }}>
-        <TableHeaderColumn thStyle={{width: '32.9%'}} dataField='currency' isKey={true}>Currency codes</TableHeaderColumn>
-        <TableHeaderColumn dataField='value'>Value compared to USD</TableHeaderColumn>
+        <TableHeaderColumn thStyle={{width: '40%', textAlign: 'center'}} dataField='currency' isKey={true}>Currency codes</TableHeaderColumn>
+        <TableHeaderColumn thStyle={{textAlign: 'center'}} dataField='value'>Value compared to USD</TableHeaderColumn>
       </BootstrapTable>
     </>
   )
