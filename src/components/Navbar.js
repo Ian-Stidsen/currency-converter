@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, Suspense } from 'react';
+import { Link, Outlet } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
 import './navbar.css';
@@ -89,6 +89,9 @@ function Navbar() {
           <li><Link style={linkStyle} to='/rates'>Rates</Link></li>
         </ul>
       </nav>
+      <Suspense fallback='Loading...'>
+        <Outlet />
+      </Suspense>
     </header>
   );
 }

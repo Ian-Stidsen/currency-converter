@@ -1,95 +1,67 @@
 import React, {
   useEffect,
   useState,
+  useRef
 } from 'react';
 import '../stylesheets/converter.css';
 
-import API_KEYS from '../data/currencyAPI.json';
+import { Helmet } from 'react-helmet';
 
-//const CURRENCY_API =`https://api.apilayer.com/currency_data/convert?to=${currencyTo.value}&from=${currencyFrom.value}&amount=${inputFrom.value}`;
+import { apiResponse } from '../components/apiResponse';
 
-
-function Converter() {
-
+export function Converter() {
 
   // Runs the API once when the page is loaded.
+  const [rates, setRates] = useState({USD: 1})
+  const [currencyCodes, setCurrencyCodes] = useState([<option key={'USD'} value='USD'>USD</option>]);
+
+  const currencyFrom = useRef('USD');
+  const currencyTo = useRef('USD');
+
+  const inputFrom = useRef(0);
+  const inputTo = useRef(0);
+
   useEffect(() => {
+    async function getConversionRates() {
+      const promise = await apiResponse();
+  
+      Object.entries(promise).map(entry => {
+        const currency = entry[0].slice(3, entry[0].length);
+        
+        setRates((prevState) => ({
+          ...prevState,
+          [currency]: entry[1]
+        }));
+        
+        setCurrencyCodes((prevState) => ([
+          ...prevState,
+          <option key={currency} value={currency}>{currency}</option>
+        ]));
+        
+      });
+    };
     getConversionRates();
   }, [])
 
-  const [rates, setRates] = useState({USD: 1})
-  const [currencyCodes, setCurrencyCodes] = useState([<option value='USD'>USD</option>]);
 
-  const [currencyFromValue, setCurrencyFromValue] = useState('USD');
-  const [currencyToValue, setCurrencyToValue] = useState('USD');
+  const convert = () => {
+    const currencyFromValue = currencyFrom.current.value;
+    const currencyToValue = currencyTo.current.value;
+    const inputFromValue = inputFrom.current.value;
 
-  const [inputFromValue, setInputFromValue] = useState(0);
-  const [inputToValue, setInputToValue] = useState(0);
+    const rate = rates[currencyToValue] / rates[currencyFromValue];
+    const result = inputFromValue * rate;
 
-  function getConversionRates () {
-    const CURRENCY_API = 'https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP';
-
-    let myHeaders = new Headers();
-    myHeaders.append("apikey", API_KEYS.Converter_APIKEY);
-
-    const requestOptions = {
-    method: 'GET',
-    redirect: 'follow',
-    headers: myHeaders
-    };
-
-    fetch(CURRENCY_API, requestOptions)
-      .then(response => response.json())
-      .then(data => data.quotes)
-      .then(result => {
-        Object.entries(result).map(entry => {
-          const currency = entry[0][3] + entry[0][4] + entry[0][5];
-          
-          setRates((prevState) => ({
-            ...prevState,
-            [currency]: entry[1]
-          }));
-
-          setCurrencyCodes((prevState) => ([
-            ...prevState,
-            <option value={currency}>{currency}</option>
-          ]));
-
-        });
-      });
+    inputTo.current.value = result;
   };
 
-  const convert = (e) => {
-    const id = e.target.id;
-    const value = e.target.value;
+  const swapCurrencies = () => {
+    const tempCurrency = currencyFrom.current.value; 
+    currencyFrom.current.value =  currencyTo.current.value;
+    currencyTo.current.value = tempCurrency;
 
-    switch(id) {
-      case 'currencyFrom':
-        setCurrencyFromValue(value);
-        calculate(value, currencyToValue, inputFromValue);
-        break;
-
-      case 'currencyTo':
-        setCurrencyToValue(value);
-        calculate(currencyFromValue, value, inputFromValue);
-        break;
-
-      case 'inputFrom':
-        setInputFromValue(value);
-        calculate(currencyFromValue, currencyToValue, value);
-        break;
-
-      default:
-        calculate(currencyFromValue, currencyToValue, inputFromValue);
-        break;
-    }
-  };
-  
-  const calculate = (currencyFrom, currencyTo, inputFrom) => {
-    const rate = rates[currencyTo] / rates[currencyFrom];
-    const result = inputFrom * rate;
-    setInputToValue(result);
-  };
+    convert();
+  }
 
   const containerStyle = {
     display: 'flex',
@@ -100,35 +72,46 @@ function Converter() {
   }
 
   return (
-    <div className="container" style={containerStyle}>
-      <h1 className='converter-title'>Currency Converter</h1>
-      <form>
+    <>
+      <Helmet><title>Converter | Currency</title></Helmet>
+      <div className="container" style={containerStyle}>
+        <h1 className='converter-title'>Currency Converter</h1>
+        <form>
 
-        <div className="input-group">
-          <div className="input-group-text">
-            <select className="form-select" onChange={convert} name="currency" id="currencyFrom">
-              {currencyCodes}
-            </select>
-          </div>
-          <div className='form-floating'>
-            <input className="form-control" onChange={convert} type="number" id="inputFrom" placeholder="" value={inputFromValue}></input>
-            <label htmlFor="convertFrom" className='form-label'>Convert from {currencyFromValue}</label>
+          <div className="input-group">
+            <div className="input-group-text">
+              <select ref={currencyFrom} className="form-select" onChange={convert} name="currency" id="currencyFrom">
+                {currencyCodes}
+              </select>
+            </div>
+            <div className='form-floating'>
+              <input ref={inputFrom} className="form-control" onChange={convert} type="number" id="inputFrom" placeholder=""></input>
+              <label htmlFor="convertFrom" className='form-label'>Convert from {currencyFrom.value}</label>
+            </div>
+
+            <button type='button' onClick={swapCurrencies} id='swapButton' className='form-button'>
+              <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-switch-horizontal" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <polyline points="16 3 20 7 16 11"></polyline>
+                <line x1="10" y1="7" x2="20" y2="7"></line>
+                <polyline points="8 13 4 17 8 21"></polyline>
+                <line x1="4" y1="17" x2="13" y2="17"></line>
+              </svg>
+            </button>
+
+            <div className='form-floating'>
+              <input ref={inputTo} readOnly className="form-control" type="number" id="inputTo" placeholder=""></input>
+              <label htmlFor="convertTo" className='form-label'>Convert to {currencyTo.value}</label>
+            </div>
+            <div className="input-group-text">
+              <select ref={currencyTo} className="form-select" onChange={convert} name="currency" id="currencyTo">
+                {currencyCodes}
+              </select>
+            </div>
           </div>
 
-          <div className="input-group-text">
-            <select className="form-select" onChange={convert} name="currency" id="currencyTo">
-              {currencyCodes}
-            </select>
-          </div>
-          <div className='form-floating'>
-            <input value={inputToValue} readOnly className="form-control" type="number" id="inputTo" placeholder=""></input>
-            <label htmlFor="convertTo" className='form-label'>Convert to {currencyToValue}</label>
-          </div>
-        </div>
-
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 }
-
-export default Converter;
