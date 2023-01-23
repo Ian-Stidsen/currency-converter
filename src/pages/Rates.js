@@ -11,16 +11,23 @@ import { apiResponse } from '../components/apiResponse';
 
 export function Rates() {
 
-  const comparedValueRef = useRef('1 USD')
+  const comparedFromRef = useRef('USD')
 
-  const [rates, setRates] = useState([{currency: '1 USD', value: 1 + ' USD'}]);
+  const [rates, setRates] = useState([
+    {
+      currency: 'USD', 
+      value: 1, 
+    }
+  ]);
 
   // Runs the API once when the page is loaded.
   useEffect(() => {
     getConversionRates()
   }, [])
+
   const getConversionRates = async() => {
-    setRates([{currency: '1 USD', value: 1 + ' USD'}]);
+    // Makes sure this function only runs once because useEffect runs twice.
+    if (rates.length > 1) return;
     const promise = await apiResponse();
 
     Object.entries(promise).map(entry => {
@@ -30,8 +37,8 @@ export function Rates() {
       setRates((prevState) => ([
         ...prevState,
         {
-        currency: '1 ' + currency,
-        value: value.toFixed(4) + ' USD'
+        currency: currency,
+        value: value.toFixed(4),
         }
       ]));
       return null;
@@ -40,10 +47,29 @@ export function Rates() {
 
   };
 
-  const change = () => {
-    getConversionRates();
-    console.log(comparedValueRef.current.value)
-  }
+  const changeComparation = () => {
+    const compareFrom = comparedFromRef.current.value;
+
+    const compareRate = rates.filter(rate => {
+      if (rate.currency !== compareFrom) return null;
+      return rate.value;
+    })
+
+    const comparedvalue = compareRate[0].value
+    setRates(prevState => {
+      const newState = prevState.map(rate => {
+        return (
+          {...rate, value: (rate.value / comparedvalue)}
+        )
+      })
+      return newState;
+    })
+
+  };
+
+  window.addEventListener('click', () => {
+    //console.log(rates)
+  })
 
   return (
     <>
@@ -57,7 +83,7 @@ export function Rates() {
           Compare value from
         </TableHeaderColumn>
         <TableHeaderColumn thStyle={{textAlign: 'center'}} dataField='value'>
-          <select ref={comparedValueRef} onChange={change}>
+          <select ref={comparedFromRef} onChange={changeComparation}>
             {rates.map(rate => {
               return <option key={rate.currency} value={rate.currency}>{rate.currency}</option>
             })}
