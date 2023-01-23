@@ -15,8 +15,8 @@ export function Rates() {
 
   const [rates, setRates] = useState([
     {
-      currency: 'USD', 
-      value: 1, 
+      currencyCode: '1 USD', 
+      currencyValue: 1 + ' USD', 
     }
   ]);
 
@@ -37,8 +37,8 @@ export function Rates() {
       setRates((prevState) => ([
         ...prevState,
         {
-        currency: currency,
-        value: value.toFixed(4),
+        currencyCode: '1 ' + currency,
+        currencyValue: value.toFixed(4) + ' ' + comparedFromRef.current.value,
         }
       ]));
       return null;
@@ -51,25 +51,24 @@ export function Rates() {
     const compareFrom = comparedFromRef.current.value;
 
     const compareRate = rates.filter(rate => {
-      if (rate.currency !== compareFrom) return null;
-      return rate.value;
+      if (rate.currencyCode.split(' ')[1] !== compareFrom) return null;
+      return rate.currencyValue;
     })
 
-    const comparedvalue = compareRate[0].value
+    const comparedvalue = compareRate[0].currencyValue.split(' ')[0]
     setRates(prevState => {
       const newState = prevState.map(rate => {
+        const rateValue = rate.currencyValue.split(' ')[0];
+        const rateCalculation = (parseFloat(rateValue) / comparedvalue).toFixed(4) + ' ' + compareFrom
+
         return (
-          {...rate, value: (rate.value / comparedvalue)}
+          {...rate, currencyValue: rateCalculation}
         )
       })
       return newState;
     })
 
   };
-
-  window.addEventListener('click', () => {
-    //console.log(rates)
-  })
 
   return (
     <>
@@ -79,13 +78,14 @@ export function Rates() {
         width: '500px',
       }}>
         <TableHeaderColumn thStyle={{width: '50%', textAlign: 'center'}}
-        dataField='currency' isKey={true}>
+        dataField='currencyCode' isKey={true}>
           Compare value from
         </TableHeaderColumn>
-        <TableHeaderColumn thStyle={{textAlign: 'center'}} dataField='value'>
+        <TableHeaderColumn thStyle={{textAlign: 'center'}} dataField='currencyValue'>
           <select ref={comparedFromRef} onChange={changeComparation}>
             {rates.map(rate => {
-              return <option key={rate.currency} value={rate.currency}>{rate.currency}</option>
+              const currencyCode = rate.currencyCode.split(' ')[1]
+              return <option key={currencyCode} value={currencyCode}>{currencyCode}</option>
             })}
           </select>
         </TableHeaderColumn>
