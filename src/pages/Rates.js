@@ -1,6 +1,7 @@
 import React, {
   useEffect,
-  useState
+  useState,
+  useRef
 } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
@@ -10,7 +11,7 @@ import { apiResponse } from '../components/apiResponse';
 
 export function Rates() {
 
-  const [rates, setRates] = useState([{currency: 'USD', value: 1}]);
+  const [rates, setRates] = useState([{currency: '1 USD', value: 1 + ' USD'}]);
 
   // Runs the API once when the page is loaded.
   useEffect(() => {
@@ -35,7 +36,6 @@ export function Rates() {
       .catch(console.error)
   }, [])
 
-
   return (
     <>
       <Helmet><title>Converter | Rates</title></Helmet>
@@ -43,12 +43,16 @@ export function Rates() {
         tableLayout: 'auto',
         width: '500px',
       }}>
-        <TableHeaderColumn thStyle={{width: '40%', textAlign: 'center'}}
+        <TableHeaderColumn thStyle={{width: '50%', textAlign: 'center'}}
         dataField='currency' isKey={true}>
-          Currency codes
+          Compare value from
         </TableHeaderColumn>
         <TableHeaderColumn thStyle={{textAlign: 'center'}} dataField='value'>
-          Value compared to USD
+          <select>
+            {rates.map(rate => {
+              return <option key={rate.currency} value={rate.currency}>{rate.currency}</option>
+            })}
+          </select>
         </TableHeaderColumn>
       </BootstrapTable>
     </>
