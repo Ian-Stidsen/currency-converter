@@ -1,18 +1,16 @@
 import React, {
   useEffect,
   useState,
-  useMemo
 } from 'react';
 import '../stylesheets/converter.css';
 
-import API_KEYS from '../data/API.json';
+import API_KEYS from '../data/currencyAPI.json';
 
 //const CURRENCY_API =`https://api.apilayer.com/currency_data/convert?to=${currencyTo.value}&from=${currencyFrom.value}&amount=${inputFrom.value}`;
 
 
 function Converter() {
 
-  function log(log) {console.log(log)};
 
   // Runs the API once when the page is loaded.
   useEffect(() => {

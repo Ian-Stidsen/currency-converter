@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-import API_KEYS from '../data/API.json'
+import API_KEYS from '../data/currencyAPI.json'
 
 function Rates() {
 
