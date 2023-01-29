@@ -3,7 +3,7 @@ import React, {
   useState,
   useRef
 } from 'react';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+
 import { Helmet } from 'react-helmet';
 import { apiResponse } from '../components/apiResponse';
 import '../stylesheets/rates.css';
@@ -11,11 +11,19 @@ import '../stylesheets/rates.css';
 export function Rates() {
 
   const comparedFromRef = useRef('USD')
-
-  const [rates, setRates] = useState([
+  
+  // Uses 2 different useStates to not distort values when changing comparison back and forth 
+  const [visualRates, setVisualRates] = useState([
     {
       currencyCode: '1 USD', 
-      currencyValue: 1 + ' USD', 
+      currencyValue: '1 USD', 
+    }
+  ]);
+
+  const [rateData, setRateData] = useState([
+    {
+      currencyCode: 'USD', 
+      currencyValue: 1, 
     }
   ]);
 
@@ -26,14 +34,22 @@ export function Rates() {
 
   const getConversionRates = async() => {
     // Makes sure this function only runs once because useEffect runs twice.
-    if (rates.length > 1) return;
+    if (rateData.length > 1) return;
     const promise = await apiResponse();
 
     Object.entries(promise).map(entry => {
       const currency = entry[0].slice(3, entry[0].length);
       const value = 1 / entry[1];
 
-      setRates((prevState) => ([
+      setRateData((prevState) => ([
+        ...prevState,
+        {
+        currencyCode: currency,
+        currencyValue: value
+        }
+      ]));
+
+      setVisualRates((prevState) => ([
         ...prevState,
         {
         currencyCode: '1 ' + currency,
@@ -46,28 +62,28 @@ export function Rates() {
 
   };
 
+  // Changes currency which you compare from.
   const changeComparation = () => {
-    const compareFrom = comparedFromRef.current.value;
+    const comparedCurrency = rateData.filter(rate => {
+      if (rate.currencyCode !== comparedFromRef.current.value) return null;
+      return rate;
+    })[0].currencyValue;
 
-    const compareRate = rates.filter(rate => {
-      if (rate.currencyCode.split(' ')[1] !== compareFrom) return null;
-      return rate.currencyValue;
-    })
-
-    const comparedvalue = compareRate[0].currencyValue.split(' ')[0]
-    setRates(prevState => {
+    setVisualRates(prevState => {
       const newState = prevState.map(rate => {
-        const currencyCode = rate.currencyCode.split(' ')[1];
-        const currencyValue = rate.currencyValue.split(' ')[0];
+        const rateCalculation = rateData.map(data => {
+          const currencyCode = rate.currencyCode.split(' ')[1];
+          const currencyValue = (data.currencyValue / comparedCurrency).toFixed(8);
+          if (data.currencyCode !== currencyCode) return null;
+          if (data.currencyCode === comparedFromRef.current.value) return rate.currencyCode;
+          return currencyValue + ' ' + comparedFromRef.current.value;
 
-        const rateCalculation = (parseFloat(currencyValue) / comparedvalue).toFixed(8) + ' ' + compareFrom;
-        if (compareFrom === currencyCode) {
-          return {...rate, currencyValue: rate.currencyCode};
-        }
-
+        });
         return {...rate, currencyValue: rateCalculation};
+
       });
       return newState;
+
     });
 
   };
@@ -75,24 +91,35 @@ export function Rates() {
   return (
     <>
       <Helmet><title>Converter | Rates</title></Helmet>
-      <BootstrapTable data={rates} tableStyle={{
-        tableLayout: 'auto',
-        width: '500px',
-        maxWidth: '80vw'
-      }}>
-        <TableHeaderColumn thStyle={{width: '50%', textAlign: 'center'}}
-        dataField='currencyCode' isKey={true}>
-          Compare value from
-        </TableHeaderColumn>
-        <TableHeaderColumn thStyle={{textAlign: 'center'}} dataField='currencyValue'>
-          <select id='compareSelect' ref={comparedFromRef} onChange={changeComparation}>
-            {rates.map(rate => {
-              const currencyCode = rate.currencyCode.split(' ')[1]
-              return <option key={currencyCode} value={currencyCode}>{currencyCode}</option>
-            })}
-          </select>
-        </TableHeaderColumn>
-      </BootstrapTable>
+      <table className='table'>
+        <thead className='tableheader'>
+          <tr>
+
+            <th className='tableHead'>
+              Compare rate from
+            </th>
+            <th className='tableHead'>
+              <select id='compareSelect' ref={comparedFromRef} onChange={changeComparation}>
+                {rateData.map(rate => {
+                  const currencyCode = rate.currencyCode;
+                  return <option key={currencyCode} value={currencyCode}>{'To ' + currencyCode}</option>
+                })}
+              </select>
+            </th>
+          </tr>
+
+        </thead>
+        <tbody className='tableBody'>
+          {visualRates.map((rate) => {
+            return (
+              <tr key={rate.currencyCode}>
+                <td className='tableData'>{rate.currencyCode}</td>
+                <td className='tableData'>{rate.currencyValue}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </>
   )
 };
