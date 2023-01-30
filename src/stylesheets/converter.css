@@ -4,9 +4,24 @@
   padding: 0;
 }
 
+:root {
+  --converter-border: 1px solid #d0d4d8;
+}
+
 .form-select {
   background-color: inherit;
   border: none;
   width: inherit;
   height: inherit;
+}
+
+#swapButton {
+  border: none;
+  border-top: var(--converter-border);
+  border-bottom: var(--converter-border);
+  color: #3a3f45;
+}
+
+#inputTo:hover {
+  cursor: pointer;
 }

@@ -63,6 +63,10 @@ export function Converter() {
     convert();
   }
 
+  const copyResult = () => {
+    navigator.clipboard.writeText(inputTo.current.value);
+  };
+
   const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -100,7 +104,7 @@ export function Converter() {
             </button>
 
             <div className='form-floating'>
-              <input ref={inputTo} readOnly className="form-control" type="number" id="inputTo" placeholder=""></input>
+              <input ref={inputTo} onClick={copyResult} readOnly className="form-control" type="number" id="inputTo" placeholder=""></input>
               <label htmlFor="convertTo" className='form-label'>Convert to {currencyTo.value}</label>
             </div>
             <div className="input-group-text">
