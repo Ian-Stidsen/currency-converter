@@ -25,3 +25,7 @@
 #inputTo:hover {
   cursor: pointer;
 }
+
+.container {
+  margin-top: 50px;
+}

@@ -67,18 +67,10 @@ export function Converter() {
     navigator.clipboard.writeText(inputTo.current.value);
   };
 
-  const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '50vh'
-  }
-
   return (
     <>
       <Helmet><title>Converter | Currency</title></Helmet>
-      <div className="container" style={containerStyle}>
+      <div className="container">
         <h1 className='converter-title'>Currency Converter</h1>
         <form>
 

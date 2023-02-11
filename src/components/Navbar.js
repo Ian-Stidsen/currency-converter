@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
