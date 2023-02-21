@@ -14,7 +14,7 @@ const Rates = lazy(() => import('./pages/Rates').then(module => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename='/currency-converter'>
     <Routes>
       <Route path='/' element={<Navbar />}>
         <Route path="/" element={<Converter />} />
