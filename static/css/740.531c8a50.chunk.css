@@ -1,0 +1,2 @@
+*{margin:0;padding:0}:root{--border-color:#727272}.table,.tableBody,.tableHeaders{max-width:80vw;width:500px}.table{margin:10px}.tableHeader{display:flex;flex-direction:row}.tableHead{border:1px solid #727272;border:1px solid var(--border-color);height:40px;text-align:center;width:50%}#compareSelect{border:none;font-weight:700;height:100%;outline:none!important;text-align:center;width:100%}.tableBody,.tableData{border:1px solid #727272;border:1px solid var(--border-color)}.tableData{text-align:center}
+/*# sourceMappingURL=740.531c8a50.chunk.css.map*/
