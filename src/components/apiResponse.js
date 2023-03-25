@@ -1,10 +1,10 @@
-import API_KEYS from '../data/currencyAPI.json';
 
 export function apiResponse () {
   const CURRENCY_API = 'https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP';
+  const API_KEY = process.env.REACT_APP_API_KEY;
 
   let myHeaders = new Headers();
-  myHeaders.append("apikey", API_KEYS.Converter_APIKEY);
+  myHeaders.append("apikey", API_KEY);
 
   const requestOptions = {
   method: 'GET',
